@@ -8,47 +8,185 @@
 
 <style>
 
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
 body{
   background:#081229;
   color:white;
-  font-family:Arial;
+  font-family:Arial,sans-serif;
   padding:20px;
 }
 
-.card{
-  background:#1e293b;
-  padding:20px;
-  border-radius:20px;
+.container{
+  max-width:700px;
+  margin:auto;
+}
+
+h1{
+  font-size:42px;
   margin-bottom:20px;
 }
 
-input,select,button{
+.card{
+  background:#1c2942;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+h2{
+  margin-bottom:20px;
+  font-size:30px;
+}
+
+input,
+select{
   width:100%;
-  padding:14px;
-  margin-bottom:14px;
+  padding:16px;
   border:none;
-  border-radius:12px;
+  border-radius:14px;
+  margin-bottom:16px;
   font-size:16px;
 }
 
 button{
-  background:#10b981;
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  background:#1ec98f;
   color:white;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(0.98);
+}
+
+.summary{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.sum-card{
+  padding:16px;
+  border-radius:16px;
+}
+
+.green{
+  background:#14532d;
+}
+
+.red{
+  background:#7f1d1d;
+}
+
+.blue{
+  background:#1e3a8a;
+}
+
+.orange{
+  background:#9a3412;
+}
+
+.label{
+  font-size:14px;
+  opacity:0.8;
+  margin-bottom:10px;
+}
+
+.value{
+  font-size:24px;
   font-weight:bold;
 }
 
 .tx{
   background:#334155;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
+  padding:14px;
+  border-radius:14px;
+  margin-top:12px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.small{
+  font-size:13px;
+  color:#cbd5e1;
+  margin-top:6px;
+}
+
+.masuk{
+  color:#22c55e;
+  font-weight:bold;
+}
+
+.keluar{
+  color:#ef4444;
+  font-weight:bold;
+}
+
+.loading{
+  text-align:center;
+  color:#94a3b8;
+  padding:20px;
+}
+
+.empty{
+  text-align:center;
+  color:#94a3b8;
+  padding:20px;
+}
+
+.delete-btn{
+  margin-top:12px;
+  background:#ef4444;
+  padding:10px;
+  border-radius:10px;
+  font-size:14px;
+}
+
+.success{
+  background:#14532d;
+  color:#bbf7d0;
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:16px;
+  display:none;
+}
+
+.error{
+  background:#7f1d1d;
+  color:#fecaca;
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:16px;
+  display:none;
 }
 
 </style>
 </head>
 <body>
 
+<div class="container">
+
 <h1>🏡 Keuangan Keluarga</h1>
+
+<div class="success" id="successBox"></div>
+
+<div class="error" id="errorBox"></div>
+
+<!-- TAMBAH TRANSAKSI -->
 
 <div class="card">
 
@@ -64,27 +202,113 @@ type="number"
 placeholder="Nominal">
 
 <select id="type">
-  <option value="masuk">Pemasukan</option>
-  <option value="keluar">Pengeluaran</option>
+
+  <option value="masuk">
+    Pemasukan
+  </option>
+
+  <option value="keluar">
+    Pengeluaran
+  </option>
+
 </select>
 
 <select id="user">
-  <option value="suami">Suami</option>
-  <option value="istri">Istri</option>
+
+  <option value="suami">
+    Suami
+  </option>
+
+  <option value="istri">
+    Istri
+  </option>
+
 </select>
 
 <button id="btnTambah">
-Tambah
+Tambah Transaksi
 </button>
 
 </div>
+
+<!-- DASHBOARD -->
+
+<div class="card">
+
+<h2>Dashboard</h2>
+
+<div class="summary">
+
+  <div class="sum-card green">
+
+    <div class="label">
+      Pemasukan
+    </div>
+
+    <div class="value"
+    id="totalMasuk">
+      Rp 0
+    </div>
+
+  </div>
+
+  <div class="sum-card red">
+
+    <div class="label">
+      Pengeluaran
+    </div>
+
+    <div class="value"
+    id="totalKeluar">
+      Rp 0
+    </div>
+
+  </div>
+
+  <div class="sum-card blue">
+
+    <div class="label">
+      Sisa Uang
+    </div>
+
+    <div class="value"
+    id="sisaUang">
+      Rp 0
+    </div>
+
+  </div>
+
+  <div class="sum-card orange">
+
+    <div class="label">
+      Jumlah Transaksi
+    </div>
+
+    <div class="value"
+    id="jumlahData">
+      0
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<!-- REALTIME DATA -->
 
 <div class="card">
 
 <h2>Realtime Data</h2>
 
 <div id="list">
-Loading...
+
+<div class="loading">
+Memuat data...
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -104,6 +328,40 @@ createClient(
 const list =
 document.getElementById('list')
 
+function showSuccess(text){
+
+  const box =
+  document.getElementById(
+    'successBox'
+  )
+
+  box.style.display='block'
+
+  box.innerHTML=text
+
+  setTimeout(()=>{
+    box.style.display='none'
+  },3000)
+
+}
+
+function showError(text){
+
+  const box =
+  document.getElementById(
+    'errorBox'
+  )
+
+  box.style.display='block'
+
+  box.innerHTML=text
+
+  setTimeout(()=>{
+    box.style.display='none'
+  },5000)
+
+}
+
 async function loadData(){
 
   const { data, error } =
@@ -114,49 +372,134 @@ async function loadData(){
       ascending:false
     })
 
-  console.log(data)
-  console.log(error)
-
   if(error){
 
-    alert(error.message)
+    console.log(error)
+
+    showError(
+      error.message
+    )
 
     return
   }
+
+  renderData(data)
+
+}
+
+function renderData(data){
+
+  let totalMasuk = 0
+  let totalKeluar = 0
 
   list.innerHTML=''
 
   if(data.length===0){
 
-    list.innerHTML='Belum ada data'
+    list.innerHTML=`
+
+      <div class="empty">
+        Belum ada transaksi
+      </div>
+
+    `
 
     return
   }
 
   data.forEach(item=>{
 
+    if(item.type==='masuk'){
+
+      totalMasuk +=
+      Number(item.amount)
+
+    }else{
+
+      totalKeluar +=
+      Number(item.amount)
+
+    }
+
     list.innerHTML += `
 
       <div class="tx">
 
-        <b>${item.description}</b>
+        <div class="row">
 
-        <div>
-          Rp ${Number(item.amount)
+          <b>
+            ${item.description}
+          </b>
+
+          <div class="${
+            item.type==='masuk'
+            ? 'masuk'
+            : 'keluar'
+          }">
+
+            ${
+              item.type==='masuk'
+              ? '+'
+              : '-'
+            }
+
+            Rp ${Number(item.amount)
             .toLocaleString('id-ID')}
+
+          </div>
+
         </div>
 
-        <small>
-          ${item.type}
-          -
+        <div class="small">
+
           ${item.created_by}
-        </small>
+          •
+          ${item.transaction_date}
+
+        </div>
+
+        <button
+        class="delete-btn"
+        onclick="deleteTransaction(${item.id})">
+
+          Hapus
+
+        </button>
 
       </div>
 
     `
 
   })
+
+  document.getElementById(
+    'totalMasuk'
+  ).innerHTML =
+  'Rp ' +
+  totalMasuk.toLocaleString(
+    'id-ID'
+  )
+
+  document.getElementById(
+    'totalKeluar'
+  ).innerHTML =
+  'Rp ' +
+  totalKeluar.toLocaleString(
+    'id-ID'
+  )
+
+  document.getElementById(
+    'sisaUang'
+  ).innerHTML =
+  'Rp ' +
+  (
+    totalMasuk-totalKeluar
+  ).toLocaleString('id-ID')
+
+  document.getElementById(
+    'jumlahData'
+  ).innerHTML =
+  data.length
 
 }
 
@@ -170,6 +513,7 @@ document
     document
     .getElementById('desc')
     .value
+    .trim()
 
     const amount =
     document
@@ -188,7 +532,9 @@ document
 
     if(!desc || !amount){
 
-      alert('Lengkapi data')
+      showError(
+        'Lengkapi data'
+      )
 
       return
     }
@@ -199,14 +545,20 @@ document
       .insert([
         {
           family_code:'keluarga01',
+
           description:desc,
+
           amount:Number(amount),
+
           type:type,
+
           category:'umum',
+
           transaction_date:
           new Date()
           .toISOString()
           .split('T')[0],
+
           created_by:user
         }
       ])
@@ -215,12 +567,16 @@ document
 
       console.log(error)
 
-      alert(error.message)
+      showError(
+        error.message
+      )
 
       return
     }
 
-    alert('Berhasil tambah transaksi')
+    showSuccess(
+      'Berhasil tambah transaksi'
+    )
 
     document
     .getElementById('desc')
@@ -234,6 +590,41 @@ document
 
   }
 )
+
+window.deleteTransaction =
+async function(id){
+
+  const confirmDelete =
+  confirm(
+    'Hapus transaksi ini?'
+  )
+
+  if(!confirmDelete){
+    return
+  }
+
+  const { error } =
+  await supabase
+    .from('transactions')
+    .delete()
+    .eq('id',id)
+
+  if(error){
+
+    showError(
+      error.message
+    )
+
+    return
+  }
+
+  showSuccess(
+    'Transaksi berhasil dihapus'
+  )
+
+  loadData()
+
+}
 
 supabase
 .channel('realtime-transactions')
