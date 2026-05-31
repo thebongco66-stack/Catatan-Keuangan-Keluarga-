@@ -6,369 +6,151 @@
 
 <title>Keuangan Keluarga</title>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
 
 body{
   background:#081229;
   color:white;
-  font-family:Arial,sans-serif;
+  font-family:Arial;
   padding:20px;
-}
-
-.container{
-  max-width:700px;
-  margin:auto;
-}
-
-h1{
-  font-size:42px;
-  margin-bottom:20px;
 }
 
 .card{
-  background:#1c2942;
-  border-radius:20px;
+  background:#1e293b;
   padding:20px;
+  border-radius:20px;
   margin-bottom:20px;
 }
 
-h3{
-  margin-bottom:20px;
-  font-size:24px;
-}
-
-input,
-select{
+input,select,button{
   width:100%;
-  padding:16px;
+  padding:14px;
+  margin-bottom:14px;
   border:none;
-  border-radius:14px;
-  margin-bottom:16px;
+  border-radius:12px;
   font-size:16px;
 }
 
 button{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:14px;
-  background:#1ec98f;
+  background:#10b981;
   color:white;
-  font-size:18px;
   font-weight:bold;
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(0.98);
-}
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
 }
 
 .tx{
   background:#334155;
-  border-radius:14px;
-  padding:14px;
-  margin-top:12px;
-}
-
-.small{
-  font-size:13px;
-  color:#cbd5e1;
-  margin-top:5px;
-}
-
-.masuk{
-  color:#22c55e;
-  font-weight:bold;
-}
-
-.keluar{
-  color:#ef4444;
-  font-weight:bold;
-}
-
-.total{
-  font-size:32px;
-  font-weight:bold;
-}
-
-.loading{
-  text-align:center;
-  color:#94a3b8;
-  padding:20px;
-}
-
-.success{
-  background:#14532d;
-  color:#bbf7d0;
-  padding:14px;
-  border-radius:14px;
-  margin-bottom:16px;
-  display:none;
-}
-
-.error{
-  background:#7f1d1d;
-  color:#fecaca;
-  padding:14px;
-  border-radius:14px;
-  margin-bottom:16px;
-  display:none;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
 }
 
 </style>
 </head>
 <body>
 
-<div class="container">
-
 <h1>🏡 Keuangan Keluarga</h1>
-
-<div class="success" id="successBox"></div>
-
-<div class="error" id="errorBox"></div>
 
 <div class="card">
 
-<h3>Tambah Transaksi</h3>
+<h2>Tambah Transaksi</h2>
 
 <input
-type="text"
 id="desc"
 placeholder="Keterangan">
 
 <input
-type="number"
 id="amount"
+type="number"
 placeholder="Nominal">
 
 <select id="type">
-  <option value="keluar">
-    Pengeluaran
-  </option>
-
-  <option value="masuk">
-    Pemasukan
-  </option>
+  <option value="masuk">Pemasukan</option>
+  <option value="keluar">Pengeluaran</option>
 </select>
 
 <select id="user">
-  <option value="suami">
-    Suami
-  </option>
-
-  <option value="istri">
-    Istri
-  </option>
+  <option value="suami">Suami</option>
+  <option value="istri">Istri</option>
 </select>
 
-<button onclick="addTransaction()">
-Tambah Transaksi
+<button id="btnTambah">
+Tambah
 </button>
 
 </div>
 
 <div class="card">
 
-<h3>Total Bulan Ini</h3>
-
-<div class="row">
-  <div>Pemasukan</div>
-  <div class="masuk" id="totalMasuk">
-    Rp 0
-  </div>
-</div>
-
-<div class="row">
-  <div>Pengeluaran</div>
-  <div class="keluar" id="totalKeluar">
-    Rp 0
-  </div>
-</div>
-
-<div class="row">
-  <div>Sisa</div>
-  <div class="total" id="sisaUang">
-    Rp 0
-  </div>
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Realtime Transaksi</h3>
+<h2>Realtime Data</h2>
 
 <div id="list">
-
-<div class="loading">
-Memuat data...
+Loading...
 </div>
 
 </div>
 
-</div>
+<script type="module">
 
-</div>
-
-<script>
-
-const SUPABASE_URL =
-'https://ndpmjznbhcnoiwmzvnhq.supabase.co'
-
-const SUPABASE_KEY =
-'sb_publishable_fvYPl6s4oSCh1eO7jckxUg_JuXuwaZG'
-
-const supabaseClient =
-window.supabase.createClient
+import {
+  createClient
+} from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabase =
-supabaseClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+createClient(
+  'https://ndpmjznbhcnoiwmzvnhq.supabase.co',
+  'sb_publishable_fvYPl6s4oSCh1eO7jckxUg_JuXuwaZG'
 )
 
-function showSuccess(text){
+const list =
+document.getElementById('list')
 
-  const box =
-  document.getElementById(
-    'successBox'
-  )
-
-  box.style.display='block'
-
-  box.innerHTML=text
-
-  setTimeout(()=>{
-    box.style.display='none'
-  },3000)
-
-}
-
-function showError(text){
-
-  const box =
-  document.getElementById(
-    'errorBox'
-  )
-
-  box.style.display='block'
-
-  box.innerHTML=text
-
-  setTimeout(()=>{
-    box.style.display='none'
-  },5000)
-
-}
-
-async function loadTransactions(){
+async function loadData(){
 
   const { data, error } =
   await supabase
     .from('transactions')
     .select('*')
-    .eq('family_code','keluarga01')
     .order('id',{
       ascending:false
     })
 
+  console.log(data)
+  console.log(error)
+
   if(error){
 
-    showError(
-      error.message
-    )
+    alert(error.message)
 
     return
   }
-
-  renderTransactions(data)
-
-}
-
-function renderTransactions(data){
-
-  const list =
-  document.getElementById(
-    'list'
-  )
-
-  if(data.length===0){
-
-    list.innerHTML=`
-      <div class="loading">
-        Belum ada transaksi
-      </div>
-    `
-
-    return
-  }
-
-  let totalMasuk = 0
-  let totalKeluar = 0
 
   list.innerHTML=''
 
-  data.forEach(item=>{
+  if(data.length===0){
 
-    if(item.type==='masuk'){
-      totalMasuk +=
-      Number(item.amount)
-    }else{
-      totalKeluar +=
-      Number(item.amount)
-    }
+    list.innerHTML='Belum ada data'
+
+    return
+  }
+
+  data.forEach(item=>{
 
     list.innerHTML += `
 
       <div class="tx">
 
-        <div class="row">
+        <b>${item.description}</b>
 
-          <b>
-            ${item.description}
-          </b>
-
-          <div class="${
-            item.type==='masuk'
-            ? 'masuk'
-            : 'keluar'
-          }">
-
-            ${
-              item.type==='masuk'
-              ? '+'
-              : '-'
-            }
-
-            Rp ${Number(item.amount)
+        <div>
+          Rp ${Number(item.amount)
             .toLocaleString('id-ID')}
-
-          </div>
-
         </div>
 
-        <div class="small">
-
+        <small>
+          ${item.type}
+          -
           ${item.created_by}
-          •
-          ${item.transaction_date}
-
-        </div>
+        </small>
 
       </div>
 
@@ -376,135 +158,85 @@ function renderTransactions(data){
 
   })
 
-  document.getElementById(
-    'totalMasuk'
-  ).innerHTML =
-  'Rp ' +
-  totalMasuk.toLocaleString(
-    'id-ID'
-  )
-
-  document.getElementById(
-    'totalKeluar'
-  ).innerHTML =
-  'Rp ' +
-  totalKeluar.toLocaleString(
-    'id-ID'
-  )
-
-  const sisa =
-  totalMasuk-totalKeluar
-
-  document.getElementById(
-    'sisaUang'
-  ).innerHTML =
-  'Rp ' +
-  sisa.toLocaleString(
-    'id-ID'
-  )
-
 }
 
-async function addTransaction(){
-
-  try{
+document
+.getElementById('btnTambah')
+.addEventListener(
+  'click',
+  async ()=>{
 
     const desc =
-    document.getElementById(
-      'desc'
-    ).value.trim()
+    document
+    .getElementById('desc')
+    .value
 
     const amount =
-    document.getElementById(
-      'amount'
-    ).value
+    document
+    .getElementById('amount')
+    .value
 
     const type =
-    document.getElementById(
-      'type'
-    ).value
+    document
+    .getElementById('type')
+    .value
 
     const user =
-    document.getElementById(
-      'user'
-    ).value
+    document
+    .getElementById('user')
+    .value
 
     if(!desc || !amount){
 
-      showError(
-        'Lengkapi data'
-      )
+      alert('Lengkapi data')
 
       return
     }
 
-    const { data, error } =
+    const { error } =
     await supabase
       .from('transactions')
       .insert([
         {
-          family_code:
-          'keluarga01',
-
-          type:type,
-
+          family_code:'keluarga01',
           description:desc,
-
           amount:Number(amount),
-
+          type:type,
           category:'umum',
-
           transaction_date:
           new Date()
           .toISOString()
           .split('T')[0],
-
           created_by:user
         }
       ])
-      .select()
 
     if(error){
 
       console.log(error)
 
-      showError(
-        error.message
-      )
+      alert(error.message)
 
       return
     }
 
-    showSuccess(
-      'Transaksi berhasil ditambahkan'
-    )
+    alert('Berhasil tambah transaksi')
 
-    document.getElementById(
-      'desc'
-    ).value=''
+    document
+    .getElementById('desc')
+    .value=''
 
-    document.getElementById(
-      'amount'
-    ).value=''
+    document
+    .getElementById('amount')
+    .value=''
 
-    loadTransactions()
-
-  }catch(err){
-
-    console.log(err)
-
-    showError(
-      err.message
-    )
+    loadData()
 
   }
-
-}
+)
 
 supabase
-.channel(
-  'transactions-realtime'
-)
+.channel('realtime-transactions')
 .on(
   'postgres_changes',
   {
@@ -514,13 +246,13 @@ supabase
   },
   payload=>{
 
-    loadTransactions()
+    loadData()
 
   }
 )
 .subscribe()
 
-loadTransactions()
+loadData()
 
 </script>
 
