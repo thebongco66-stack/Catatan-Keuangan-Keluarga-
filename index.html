@@ -9,6 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 *{
   margin:0;
   padding:0;
@@ -16,54 +17,96 @@
 }
 
 body{
-  font-family:Arial,sans-serif;
-  background:#0f172a;
+  background:#081229;
   color:white;
+  font-family:Arial,sans-serif;
   padding:20px;
-}
-
-.card{
-  background:#1e293b;
-  padding:20px;
-  border-radius:16px;
-  margin-bottom:16px;
 }
 
 h1{
   margin-bottom:20px;
+  font-size:42px;
 }
 
-input,select{
+.card{
+  background:#1c2942;
+  padding:20px;
+  border-radius:20px;
+  margin-bottom:20px;
+}
+
+h3{
+  margin-bottom:20px;
+  font-size:20px;
+}
+
+input,
+select{
   width:100%;
-  padding:12px;
-  margin-top:8px;
-  margin-bottom:16px;
+  padding:16px;
   border:none;
-  border-radius:10px;
+  border-radius:14px;
+  margin-bottom:16px;
+  font-size:16px;
 }
 
 button{
   width:100%;
-  padding:14px;
+  padding:16px;
   border:none;
-  border-radius:12px;
-  background:#10b981;
+  border-radius:14px;
+  background:#17c38f;
   color:white;
-  font-size:16px;
+  font-size:18px;
   font-weight:bold;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(0.98);
 }
 
 .tx{
   background:#334155;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
+  padding:14px;
+  border-radius:14px;
+  margin-top:12px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
 }
 
 .small{
-  color:#94a3b8;
+  color:#cbd5e1;
   font-size:13px;
+  margin-top:4px;
 }
+
+.masuk{
+  color:#22c55e;
+  font-weight:bold;
+}
+
+.keluar{
+  color:#ef4444;
+  font-weight:bold;
+}
+
+.total{
+  font-size:28px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.loading{
+  text-align:center;
+  color:#94a3b8;
+  padding:20px;
+}
+
 </style>
 </head>
 <body>
@@ -74,9 +117,15 @@ button{
 
 <h3>Tambah Transaksi</h3>
 
-<input type="text" id="desc" placeholder="Keterangan">
+<input
+type="text"
+id="desc"
+placeholder="Keterangan">
 
-<input type="number" id="amount" placeholder="Nominal">
+<input
+type="number"
+id="amount"
+placeholder="Nominal">
 
 <select id="type">
   <option value="keluar">Pengeluaran</option>
@@ -89,8 +138,35 @@ button{
 </select>
 
 <button onclick="addTransaction()">
-Tambah
+Tambah Transaksi
 </button>
+
+</div>
+
+<div class="card">
+
+<h3>Total Bulan Ini</h3>
+
+<div class="row">
+  <div>Pemasukan</div>
+  <div class="masuk" id="totalMasuk">
+    Rp 0
+  </div>
+</div>
+
+<div class="row">
+  <div>Pengeluaran</div>
+  <div class="keluar" id="totalKeluar">
+    Rp 0
+  </div>
+</div>
+
+<div class="row">
+  <div>Sisa</div>
+  <div class="total" id="sisaUang">
+    Rp 0
+  </div>
+</div>
 
 </div>
 
@@ -98,7 +174,11 @@ Tambah
 
 <h3>Realtime Transaksi</h3>
 
-<div id="list"></div>
+<div id="list">
+  <div class="loading">
+    Memuat data...
+  </div>
+</div>
 
 </div>
 
@@ -118,17 +198,21 @@ window.supabase.createClient(
 
 async function loadTransactions(){
 
-  const { data,error } = await supabase
+  const { data, error } =
+  await supabase
     .from('transactions')
     .select('*')
-    .order('id',{ascending:false})
+    .eq('family_code','keluarga01')
+    .order('id',{ ascending:false })
 
   if(error){
     console.log(error)
+    alert(error.message)
     return
   }
 
   renderTransactions(data)
+
 }
 
 function renderTransactions(data){
@@ -136,77 +220,165 @@ function renderTransactions(data){
   const list =
   document.getElementById('list')
 
+  if(data.length===0){
+
+    list.innerHTML = `
+      <div class="loading">
+        Belum ada transaksi
+      </div>
+    `
+
+    return
+  }
+
+  let totalMasuk = 0
+  let totalKeluar = 0
+
   list.innerHTML=''
 
   data.forEach(item=>{
 
+    if(item.type==='masuk'){
+      totalMasuk += Number(item.amount)
+    }else{
+      totalKeluar += Number(item.amount)
+    }
+
     list.innerHTML += `
+
       <div class="tx">
 
-        <b>${item.description}</b>
+        <div class="row">
 
-        <div>
-          Rp ${Number(item.amount)
-            .toLocaleString('id-ID')}
+          <b>${item.description}</b>
+
+          <div class="${
+            item.type==='masuk'
+            ? 'masuk'
+            : 'keluar'
+          }">
+
+            ${
+              item.type==='masuk'
+              ? '+'
+              : '-'
+            }
+
+            Rp ${Number(item.amount)
+              .toLocaleString('id-ID')}
+
+          </div>
+
         </div>
 
         <div class="small">
-          ${item.type} • ${item.created_by}
+
+          ${item.created_by}
+          •
+          ${item.transaction_date}
+
         </div>
 
       </div>
+
     `
 
   })
+
+  document.getElementById(
+    'totalMasuk'
+  ).innerHTML =
+  'Rp ' +
+  totalMasuk.toLocaleString('id-ID')
+
+  document.getElementById(
+    'totalKeluar'
+  ).innerHTML =
+  'Rp ' +
+  totalKeluar.toLocaleString('id-ID')
+
+  const sisa =
+  totalMasuk-totalKeluar
+
+  document.getElementById(
+    'sisaUang'
+  ).innerHTML =
+  'Rp ' +
+  sisa.toLocaleString('id-ID')
 
 }
 
 async function addTransaction(){
 
   const desc =
-  document.getElementById('desc').value
+  document.getElementById('desc')
+  .value
+  .trim()
 
   const amount =
-  document.getElementById('amount').value
+  document.getElementById('amount')
+  .value
 
   const type =
-  document.getElementById('type').value
+  document.getElementById('type')
+  .value
 
   const user =
-  document.getElementById('user').value
+  document.getElementById('user')
+  .value
 
   if(!desc || !amount){
+
     alert('Lengkapi data')
+
     return
   }
 
-  const { error } = await supabase
+  const { error } =
+  await supabase
     .from('transactions')
     .insert([
       {
         family_code:'keluarga01',
+
         type:type,
+
         description:desc,
-        amount:amount,
+
+        amount:Number(amount),
+
         category:'umum',
-        transaction_date:new Date(),
+
+        transaction_date:
+        new Date()
+        .toISOString()
+        .split('T')[0],
+
         created_by:user
       }
     ])
 
   if(error){
+
     console.log(error)
-    alert('Gagal tambah data')
+
+    alert(error.message)
+
     return
   }
 
-  document.getElementById('desc').value=''
-  document.getElementById('amount').value=''
+  document.getElementById(
+    'desc'
+  ).value=''
+
+  document.getElementById(
+    'amount'
+  ).value=''
 
 }
 
 supabase
-.channel('transactions-channel')
+.channel('transactions-realtime')
 .on(
   'postgres_changes',
   {
@@ -214,8 +386,10 @@ supabase
     schema:'public',
     table:'transactions'
   },
-  payload=>{
+  payload => {
+
     loadTransactions()
+
   }
 )
 .subscribe()
