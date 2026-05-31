@@ -33,14 +33,14 @@ h1{
 
 .card{
   background:#1c2942;
-  border-radius:20px;
+  border-radius:24px;
   padding:20px;
   margin-bottom:20px;
 }
 
 h2{
   margin-bottom:20px;
-  font-size:30px;
+  font-size:28px;
 }
 
 input,
@@ -77,7 +77,7 @@ button:active{
 
 .sum-card{
   padding:16px;
-  border-radius:16px;
+  border-radius:18px;
 }
 
 .green{
@@ -107,11 +107,33 @@ button:active{
   font-weight:bold;
 }
 
+.category-card{
+  background:#2b3448;
+  border-radius:22px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+
+.category-header{
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:bold;
+  font-size:20px;
+}
+
+.category-body{
+  padding:10px 18px 18px;
+}
+
 .tx{
-  background:#334155;
-  padding:14px;
-  border-radius:14px;
-  margin-top:12px;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.tx:last-child{
+  border-bottom:none;
 }
 
 .row{
@@ -123,7 +145,7 @@ button:active{
 .small{
   font-size:13px;
   color:#cbd5e1;
-  margin-top:6px;
+  margin-top:5px;
 }
 
 .masuk{
@@ -136,24 +158,18 @@ button:active{
   font-weight:bold;
 }
 
-.loading{
-  text-align:center;
-  color:#94a3b8;
-  padding:20px;
-}
-
-.empty{
-  text-align:center;
-  color:#94a3b8;
-  padding:20px;
-}
-
 .delete-btn{
-  margin-top:12px;
+  margin-top:10px;
   background:#ef4444;
   padding:10px;
   border-radius:10px;
   font-size:14px;
+}
+
+.loading{
+  text-align:center;
+  color:#94a3b8;
+  padding:20px;
 }
 
 .success{
@@ -174,6 +190,43 @@ button:active{
   display:none;
 }
 
+.rumah{
+  background:#dff7f2;
+  color:#065f46;
+}
+
+.komutasi{
+  background:#dbeafe;
+  color:#1e3a8a;
+}
+
+.istri{
+  background:#fce7f3;
+  color:#9d174d;
+}
+
+.kesehatan{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.tabungan{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.sosial{
+  background:#f3f4f6;
+  color:#374151;
+}
+
+.badge{
+  background:white;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:13px;
+}
+
 </style>
 </head>
 <body>
@@ -183,18 +236,43 @@ button:active{
 <h1>🏡 Keuangan Keluarga</h1>
 
 <div class="success" id="successBox"></div>
-
 <div class="error" id="errorBox"></div>
 
-<!-- TAMBAH TRANSAKSI -->
+<!-- FORM -->
 
 <div class="card">
 
 <h2>Tambah Transaksi</h2>
 
-<input
-id="desc"
-placeholder="Keterangan">
+<select id="mainCategory">
+
+  <option value="Rumah Tangga">
+    🏠 Rumah Tangga
+  </option>
+
+  <option value="Komutasi Suami">
+    🚆 Komutasi Suami
+  </option>
+
+  <option value="Kebutuhan Istri">
+    👩 Kebutuhan Istri
+  </option>
+
+  <option value="Kesehatan">
+    ❤️ Kesehatan & Pendidikan
+  </option>
+
+  <option value="Tabungan">
+    🐷 Tabungan & Dana
+  </option>
+
+  <option value="Sosial">
+    🎁 Sosial & Tak Terduga
+  </option>
+
+</select>
+
+<select id="subCategory"></select>
 
 <input
 id="amount"
@@ -203,12 +281,12 @@ placeholder="Nominal">
 
 <select id="type">
 
-  <option value="masuk">
-    Pemasukan
-  </option>
-
   <option value="keluar">
     Pengeluaran
+  </option>
+
+  <option value="masuk">
+    Pemasukan
   </option>
 
 </select>
@@ -240,73 +318,43 @@ Tambah Transaksi
 <div class="summary">
 
   <div class="sum-card green">
-
-    <div class="label">
-      Pemasukan
-    </div>
-
-    <div class="value"
-    id="totalMasuk">
+    <div class="label">Pemasukan</div>
+    <div class="value" id="totalMasuk">
       Rp 0
     </div>
-
   </div>
 
   <div class="sum-card red">
-
-    <div class="label">
-      Pengeluaran
-    </div>
-
-    <div class="value"
-    id="totalKeluar">
+    <div class="label">Pengeluaran</div>
+    <div class="value" id="totalKeluar">
       Rp 0
     </div>
-
   </div>
 
   <div class="sum-card blue">
-
-    <div class="label">
-      Sisa Uang
-    </div>
-
-    <div class="value"
-    id="sisaUang">
+    <div class="label">Sisa Uang</div>
+    <div class="value" id="sisaUang">
       Rp 0
     </div>
-
   </div>
 
   <div class="sum-card orange">
-
-    <div class="label">
-      Jumlah Transaksi
-    </div>
-
-    <div class="value"
-    id="jumlahData">
+    <div class="label">Jumlah Data</div>
+    <div class="value" id="jumlahData">
       0
     </div>
-
   </div>
 
 </div>
 
 </div>
 
-<!-- REALTIME DATA -->
+<!-- DATA -->
 
-<div class="card">
-
-<h2>Realtime Data</h2>
-
-<div id="list">
+<div id="categoryContainer">
 
 <div class="loading">
 Memuat data...
-</div>
-
 </div>
 
 </div>
@@ -325,8 +373,134 @@ createClient(
   'sb_publishable_fvYPl6s4oSCh1eO7jckxUg_JuXuwaZG'
 )
 
-const list =
-document.getElementById('list')
+const container =
+document.getElementById(
+  'categoryContainer'
+)
+
+const subCategories = {
+
+  "Rumah Tangga":[
+    "Belanja Bulanan",
+    "Belanja Harian",
+    "Listrik",
+    "Air",
+    "Gas LPG"
+  ],
+
+  "Komutasi Suami":[
+    "Kos Surabaya",
+    "Tiket Kereta",
+    "Transport",
+    "BBM Motor",
+    "Makan Harian"
+  ],
+
+  "Kebutuhan Istri":[
+    "Skincare",
+    "Pulsa",
+    "BBM Motor"
+  ],
+
+  "Kesehatan":[
+    "BPJS",
+    "Obat",
+    "Sekolah Anak"
+  ],
+
+  "Tabungan":[
+    "Dana Darurat",
+    "Tabungan Motor",
+    "Hari Raya"
+  ],
+
+  "Sosial":[
+    "Kondangan",
+    "Sumbangan",
+    "Tak Terduga"
+  ]
+
+}
+
+const categoryStyles = {
+
+  "Rumah Tangga":{
+    class:"rumah",
+    icon:"🏠",
+    label:"Rutin bulanan"
+  },
+
+  "Komutasi Suami":{
+    class:"komutasi",
+    icon:"🚆",
+    label:"Surabaya ↔ Tuban"
+  },
+
+  "Kebutuhan Istri":{
+    class:"istri",
+    icon:"👩",
+    label:"Kebutuhan pribadi"
+  },
+
+  "Kesehatan":{
+    class:"kesehatan",
+    icon:"❤️",
+    label:"Prioritas keluarga"
+  },
+
+  "Tabungan":{
+    class:"tabungan",
+    icon:"🐷",
+    label:"Jangka menengah"
+  },
+
+  "Sosial":{
+    class:"sosial",
+    icon:"🎁",
+    label:"Kondisional"
+  }
+
+}
+
+const mainCategory =
+document.getElementById(
+  'mainCategory'
+)
+
+const subCategory =
+document.getElementById(
+  'subCategory'
+)
+
+function updateSubCategory(){
+
+  const selected =
+  mainCategory.value
+
+  subCategory.innerHTML=''
+
+  subCategories[selected]
+  .forEach(item=>{
+
+    subCategory.innerHTML += `
+
+      <option value="${item}">
+        ${item}
+      </option>
+
+    `
+
+  })
+
+}
+
+mainCategory
+.addEventListener(
+  'change',
+  updateSubCategory
+)
+
+updateSubCategory()
 
 function showSuccess(text){
 
@@ -374,11 +548,7 @@ async function loadData(){
 
   if(error){
 
-    console.log(error)
-
-    showError(
-      error.message
-    )
+    showError(error.message)
 
     return
   }
@@ -392,83 +562,29 @@ function renderData(data){
   let totalMasuk = 0
   let totalKeluar = 0
 
-  list.innerHTML=''
+  document.getElementById(
+    'jumlahData'
+  ).innerHTML =
+  data.length
 
-  if(data.length===0){
-
-    list.innerHTML=`
-
-      <div class="empty">
-        Belum ada transaksi
-      </div>
-
-    `
-
-    return
-  }
+  const grouped = {}
 
   data.forEach(item=>{
 
-    if(item.type==='masuk'){
+    const main =
+    item.description.split(' - ')[0]
 
-      totalMasuk +=
-      Number(item.amount)
-
-    }else{
-
-      totalKeluar +=
-      Number(item.amount)
-
+    if(!grouped[main]){
+      grouped[main]=[]
     }
 
-    list.innerHTML += `
+    grouped[main].push(item)
 
-      <div class="tx">
-
-        <div class="row">
-
-          <b>
-            ${item.description}
-          </b>
-
-          <div class="${
-            item.type==='masuk'
-            ? 'masuk'
-            : 'keluar'
-          }">
-
-            ${
-              item.type==='masuk'
-              ? '+'
-              : '-'
-            }
-
-            Rp ${Number(item.amount)
-            .toLocaleString('id-ID')}
-
-          </div>
-
-        </div>
-
-        <div class="small">
-
-          ${item.created_by}
-          •
-          ${item.transaction_date}
-
-        </div>
-
-        <button
-        class="delete-btn"
-        onclick="deleteTransaction(${item.id})">
-
-          Hapus
-
-        </button>
-
-      </div>
-
-    `
+    if(item.type==='masuk'){
+      totalMasuk += Number(item.amount)
+    }else{
+      totalKeluar += Number(item.amount)
+    }
 
   })
 
@@ -476,30 +592,120 @@ function renderData(data){
     'totalMasuk'
   ).innerHTML =
   'Rp ' +
-  totalMasuk.toLocaleString(
-    'id-ID'
-  )
+  totalMasuk.toLocaleString('id-ID')
 
   document.getElementById(
     'totalKeluar'
   ).innerHTML =
   'Rp ' +
-  totalKeluar.toLocaleString(
-    'id-ID'
-  )
+  totalKeluar.toLocaleString('id-ID')
 
   document.getElementById(
     'sisaUang'
   ).innerHTML =
   'Rp ' +
-  (
-    totalMasuk-totalKeluar
-  ).toLocaleString('id-ID')
+  (totalMasuk-totalKeluar)
+  .toLocaleString('id-ID')
 
-  document.getElementById(
-    'jumlahData'
-  ).innerHTML =
-  data.length
+  container.innerHTML=''
+
+  Object.keys(grouped)
+  .forEach(category=>{
+
+    const style =
+    categoryStyles[category]
+
+    let itemsHTML=''
+
+    grouped[category]
+    .forEach(item=>{
+
+      const sub =
+      item.description
+      .split(' - ')[1]
+
+      itemsHTML += `
+
+        <div class="tx">
+
+          <div class="row">
+
+            <div>
+
+              <b>${sub}</b>
+
+              <div class="small">
+                ${item.created_by}
+              </div>
+
+            </div>
+
+            <div class="${
+              item.type==='masuk'
+              ? 'masuk'
+              : 'keluar'
+            }">
+
+              ${
+                item.type==='masuk'
+                ? '+'
+                : '-'
+              }
+
+              Rp ${Number(item.amount)
+              .toLocaleString('id-ID')}
+
+            </div>
+
+          </div>
+
+          <button
+          class="delete-btn"
+          onclick="deleteTransaction(${item.id})">
+
+            Hapus
+
+          </button>
+
+        </div>
+
+      `
+
+    })
+
+    container.innerHTML += `
+
+      <div class="category-card">
+
+        <div class="
+        category-header
+        ${style.class}
+        ">
+
+          <div>
+
+            ${style.icon}
+            ${category}
+
+          </div>
+
+          <div class="badge">
+            ${style.label}
+          </div>
+
+        </div>
+
+        <div class="category-body">
+
+          ${itemsHTML}
+
+        </div>
+
+      </div>
+
+    `
+
+  })
 
 }
 
@@ -508,12 +714,6 @@ document
 .addEventListener(
   'click',
   async ()=>{
-
-    const desc =
-    document
-    .getElementById('desc')
-    .value
-    .trim()
 
     const amount =
     document
@@ -530,14 +730,19 @@ document
     .getElementById('user')
     .value
 
-    if(!desc || !amount){
+    if(!amount){
 
       showError(
-        'Lengkapi data'
+        'Nominal wajib diisi'
       )
 
       return
     }
+
+    const description =
+    mainCategory.value +
+    ' - ' +
+    subCategory.value
 
     const { error } =
     await supabase
@@ -546,13 +751,15 @@ document
         {
           family_code:'keluarga01',
 
-          description:desc,
+          description:
+          description,
 
           amount:Number(amount),
 
           type:type,
 
-          category:'umum',
+          category:
+          mainCategory.value,
 
           transaction_date:
           new Date()
@@ -565,22 +772,14 @@ document
 
     if(error){
 
-      console.log(error)
-
-      showError(
-        error.message
-      )
+      showError(error.message)
 
       return
     }
 
     showSuccess(
-      'Berhasil tambah transaksi'
+      'Transaksi berhasil ditambahkan'
     )
-
-    document
-    .getElementById('desc')
-    .value=''
 
     document
     .getElementById('amount')
@@ -611,9 +810,7 @@ async function(id){
 
   if(error){
 
-    showError(
-      error.message
-    )
+    showError(error.message)
 
     return
   }
